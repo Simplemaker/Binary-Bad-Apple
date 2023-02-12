@@ -4,14 +4,14 @@
 #include <sys/time.h>
 #include <stdio.h>
 
-extern unsigned char Bad_Apple_bin[12618240];
+extern unsigned char Bad_Apple_bin[6309120];
 
-#define WIDTH 80
+#define WIDTH 40
 #define HEIGHT 24
-#define INCREMENT 1920
+#define INCREMENT 960
 
-char* colorScale = " .\'`^\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
-unsigned colorScaleSize = 69;
+// 16 color grayscale
+char* colorScale = " .:-~=+ozO0Z#8%@";
 
 // *  ESC [ 1 J 
 char* clear = "\x1b[1J";
@@ -31,9 +31,10 @@ void displayFrame(unsigned long position){
     printf("%sDisplaying frame %ld\n",clearline , position / INCREMENT);
     for(int h = 0; h < HEIGHT; ++h){
         for(int w = 0; w < WIDTH; ++w){
-            int color = Bad_Apple_bin[position++];
-            int color2 = color * colorScaleSize / 256;
-            printf("%c", colorScale[color2]);
+            unsigned char colors = Bad_Apple_bin[position++];
+            unsigned char color1 = 0x0f & (colors >> 4);
+            unsigned char color2 = 0x0f & colors;
+            printf("%c%c", colorScale[color1], colorScale[color2]);
         }
         printf("\n");
     }

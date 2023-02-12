@@ -8,13 +8,23 @@ from pathlib import Path
 
 OUT_RES = (80,24)
 
+def pixel2color(pixel):
+    return int(sum(pixel) / 3 / 16)
+
+def arrayToBytes(array):
+    nibble = 0
+    byte_array = []
+    for i in range(0, len(array), 2):
+        byte_array.append(array[i] + array[i+1] * 16)
+    return bytearray(byte_array)
+
 def writeFrame(file, image):
     pixels = image.load()
     for y in range(image.size[1]):
-        byte_array = []
+        colorarray = []
         for x in range(image.size[0]):
-            byte_array.append(int(sum(pixels[x,y]) / 3))
-        file.write(bytearray(byte_array))
+            colorarray.append(pixel2color(pixels[x,y]))
+        file.write(arrayToBytes(colorarray))
 
 def extractVideo(inpath, outpath, printStatus=False):
     vc = cv2.VideoCapture(inpath.as_posix())
