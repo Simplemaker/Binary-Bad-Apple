@@ -3,12 +3,18 @@
 #include <time.h>
 #include <sys/time.h>
 #include <stdio.h>
+#include <zip.h>
+#include <stdlib.h>
 
-extern unsigned char Bad_Apple_bin[6309120];
+extern unsigned char BadApple_zip[];
+extern unsigned int BadApple_zip_len;
 
-#define WIDTH 40
+unsigned char* Bad_Apple_bin;
+
+#define WIDTH 80
 #define HEIGHT 24
-#define INCREMENT 960
+#define INCREMENT 1920
+#define FRAMES 6572
 
 // 16 color grayscale
 char* colorScale = " .:-~=+ozO0Z#8%@";
@@ -32,20 +38,43 @@ void displayFrame(unsigned long position){
     for(int h = 0; h < HEIGHT; ++h){
         for(int w = 0; w < WIDTH; ++w){
             unsigned char colors = Bad_Apple_bin[position++];
-            printf("%c%c", colorScale[0x0f & colors], colorScale[colors / 0x10]);
+            printf("%c",colorScale[colors& 0x0f]);
         }
         printf("\n");
     }
+}
+
+// Loads the attached zip file into Bad_Apple_bin, and returns the number of bytes read.
+unsigned load_zip(){
+    zip_error_t er;
+    struct zip_stat zs;
+    
+    zip_source_t* source = zip_source_buffer_create(BadApple_zip, BadApple_zip_len, 0, &er);
+
+    zip_t* z = zip_open_from_source(source, 0, &er);
+    printf("Z: %p\n", z);
+    zip_stat(z, "Bad Apple.bin", ZIP_FL_ENC_UTF_8, &zs);
+    int size = zs.size;
+    printf("Found file of size: %d\n", size);
+    Bad_Apple_bin = malloc(zs.size);
+    zip_file_t* file = zip_fopen(z, "Bad Apple.bin", ZIP_FL_ENC_UTF_8);
+
+    int bytesread = zip_fread(file, Bad_Apple_bin, zs.size);
+    printf("Read %d bytes\n", bytesread);
+    return zs.size;
 }
 
 int main(int argc, char *argv[]) {
     unsigned long position = 0;
     struct timeval start, current;
     struct timespec ts;
+
+    unsigned size = load_zip();
+
     ts.tv_sec = 0;
     gettimeofday(&start, 0);
     gettimeofday(&current, 0);
-    while(position < sizeof(Bad_Apple_bin) / INCREMENT){
+    while(position < size / INCREMENT){
         displayFrame(position * INCREMENT);
         ++position;
         gettimeofday(&current, 0);
@@ -53,6 +82,5 @@ int main(int argc, char *argv[]) {
         ts.tv_nsec = 1000000 * wait_time_ms;
         nanosleep(&ts, &ts);
         printf("%s", home);
-        
     }
 }
