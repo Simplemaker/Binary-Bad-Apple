@@ -13,13 +13,13 @@ extern unsigned char Bad_Apple_bin[6309120];
 // 16 color grayscale
 char* colorScale = " .:-~=+ozO0Z#8%@";
 
-// *  ESC [ 1 J 
+// ESC [ 1 J 
 char* clear = "\x1b[1J";
 
-// *  ESC [ pl ; pc H
+// ESC [ pl ; pc H
 char* home = "\x1b[0;0H";
 
-
+// ESC [ 2 K
 char* clearline = "\x1b[2K";
 
 float timedifference_msec(struct timeval* t0, struct timeval* t1)
@@ -32,9 +32,7 @@ void displayFrame(unsigned long position){
     for(int h = 0; h < HEIGHT; ++h){
         for(int w = 0; w < WIDTH; ++w){
             unsigned char colors = Bad_Apple_bin[position++];
-            unsigned char color1 = 0x0f & (colors >> 4);
-            unsigned char color2 = 0x0f & colors;
-            printf("%c%c", colorScale[color1], colorScale[color2]);
+            printf("%c%c", colorScale[0x0f & colors], colorScale[colors / 0x10]);
         }
         printf("\n");
     }
