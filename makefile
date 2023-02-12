@@ -9,5 +9,5 @@ BadApple.o:
 	xxd -i "Bad Apple.bin" | gcc -c -o BadApple.o -x c -
 
 clean:
-	rm badapple
-	rm *.o
+	rm -f badapple
+	rm -f *.o
