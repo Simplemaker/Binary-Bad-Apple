@@ -16,3 +16,9 @@ and a viewer written in c.
 
  - `makefile` provides rules for converting the binary video file to 
  a compiled object file, and for building the c viewer.
+
+## Compression
+
+This program makes use of the lz4 compression algorithm, and internally
+decompresses using the [smallz4](https://create.stephan-brumme.com/smallz4/)
+decompress utility. The MIT license is disclosed in `decompress.c`.

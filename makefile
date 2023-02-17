@@ -11,7 +11,7 @@ compressed.o: BadApple.lz4
 	xxd -i "BadApple.lz4" | gcc -c -o compressed.o -x c -
 
 BadApple.lz4: BadApple.bin
-	lz4 -9 BadApple.bin BadApple.lz4
+	test -f "BadApple.lz4" || lz4 -9 BadApple.bin BadApple.lz4
 
 BadApple.bin:
 	python extract.py
@@ -19,4 +19,6 @@ BadApple.bin:
 clean:
 	rm -f badapple
 	rm -f *.o
+	rm -f BadApple.lz4
+	
 
