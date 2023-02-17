@@ -43,4 +43,4 @@ def extractVideo(inpath, outpath, printStatus=False):
         count += 1
     f.close()
 
-extractVideo(Path("Bad Apple.webm"), Path("Bad Apple.bin"), printStatus=True)
+extractVideo(Path("Bad Apple.webm"), Path("BadApple.bin"), printStatus=True)

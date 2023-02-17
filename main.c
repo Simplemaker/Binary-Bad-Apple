@@ -4,7 +4,9 @@
 #include <sys/time.h>
 #include <stdio.h>
 
-extern unsigned char Bad_Apple_bin[6309120];
+extern unsigned char out_data[];
+extern unsigned long out_end;
+extern void decompress(void);
 
 #define WIDTH 40
 #define HEIGHT 24
@@ -31,7 +33,7 @@ void displayFrame(unsigned long position){
     printf("%sDisplaying frame %ld\n",clearline , position / INCREMENT);
     for(int h = 0; h < HEIGHT; ++h){
         for(int w = 0; w < WIDTH; ++w){
-            unsigned char colors = Bad_Apple_bin[position++];
+            unsigned char colors = out_data[position++];
             printf("%c%c", colorScale[0x0f & colors], colorScale[colors / 0x10]);
         }
         printf("\n");
@@ -42,10 +44,12 @@ int main(int argc, char *argv[]) {
     unsigned long position = 0;
     struct timeval start, current;
     struct timespec ts;
+
+    decompress();
     ts.tv_sec = 0;
     gettimeofday(&start, 0);
     gettimeofday(&current, 0);
-    while(position < sizeof(Bad_Apple_bin) / INCREMENT){
+    while(position < out_end / INCREMENT){
         displayFrame(position * INCREMENT);
         ++position;
         gettimeofday(&current, 0);

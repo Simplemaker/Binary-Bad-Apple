@@ -1,13 +1,19 @@
-build: BadApple.o main.o
-	gcc -o badapple BadApple.o main.o
+build: compressed.o main.o decompress.o
+	gcc -o badapple compressed.o main.o decompress.o
 
 main.o: main.c
 	gcc -c main.c
 
-BadApple.o: Bad\ Apple.bin
-	xxd -i "Bad Apple.bin" | gcc -c -o BadApple.o -x c -
+decompress.o:
+	gcc -c decompress.c
 
-Bad\ Apple.bin:
+compressed.o: BadApple.lz4
+	xxd -i "BadApple.lz4" | gcc -c -o compressed.o -x c -
+
+BadApple.lz4: BadApple.bin
+	lz4 -9 BadApple.bin BadApple.lz4
+
+BadApple.bin:
 	python extract.py
 
 clean:
